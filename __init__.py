@@ -78,6 +78,7 @@ def start_vocabai_import() -> None:
         response = requests.get(csv_url)
         csv_data = response.content.decode('utf-8')
         f.write(csv_data)
+    filename = filename.replace(os.sep, '/')
     print(f'wrote csv data to {filename}')
 
     # bring up anki csv import dialog
