@@ -46,6 +46,7 @@ def start_vocabai_import() -> None:
     url = f'{base_url}/api/database/export/table/{table_id}/'
     logger.info(f'starting export job, url: {url}')
     response = requests.post(url, data={
+        "export_charset": "utf-8",
         "exporter_type": "csv",
         "csv_column_separator": ",",
         "csv_include_header": True
@@ -73,9 +74,10 @@ def start_vocabai_import() -> None:
     # download csv to tempfile location
     csv_tempfile = tempfile.NamedTemporaryFile(suffix='.csv', prefix='anki_vocabai_import', delete=False)
     filename = csv_tempfile.name
-    with open(filename, 'w') as f:
-        request_csv = requests.get(csv_url)
-        f.write(request_csv.text)
+    with open(filename, 'w', encoding='utf-8') as f:
+        response = requests.get(csv_url)
+        csv_data = response.content.decode('utf-8')
+        f.write(csv_data)
     print(f'wrote csv data to {filename}')
 
     # bring up anki csv import dialog
