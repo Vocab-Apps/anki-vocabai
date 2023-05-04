@@ -3,15 +3,6 @@ import logging
 import requests
 import time
 import tempfile
-from aqt.import_export.import_csv_dialog import ImportCsvDialog
-from anki.collection import (
-    Collection,
-    DupeResolution,
-    ImportCsvRequest,
-    ImportLogWithChanges,
-    Progress,
-)
-from aqt.operations import CollectionOp, QueryOp
 import aqt.utils
 import aqt.progress
 import aqt.import_export
@@ -33,15 +24,6 @@ from aqt.qt import *
 # load config
 config = mw.addonManager.getConfig(__name__)
 
-def show_import_log(log_with_changes: ImportLogWithChanges) -> None:
-    aqt.utils.showText(log_with_changes.log, plain_text_edit=True)
-
-def import_progress_update(progress: Progress, update: aqt.progress.ProgressUpdate) -> None:
-    if not progress.HasField("importing"):
-        return
-    update.label = progress.importing
-    if update.user_wants_abort:
-        update.abort = True
 
 def start_vocabai_import() -> None:
     pprint.pprint(config)
@@ -98,16 +80,6 @@ def start_vocabai_import() -> None:
 
     # bring up anki csv import dialog
     aqt.import_export.importing.CsvImporter.do_import(mw, filename)
-    # def on_accepted(request: ImportCsvRequest) -> None:
-    #     CollectionOp(
-    #         parent=mw,
-    #         op=lambda col: col.import_csv(request),
-    #     ).with_backend_progress(import_progress_update).success(
-    #         show_import_log
-    #     ).run_in_background()
-
-    # ImportCsvDialog(mw, filename, on_accepted)    
-
 
 
 import_action = QAction("Import from Vocab.Ai", mw)
