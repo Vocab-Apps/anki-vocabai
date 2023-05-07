@@ -31,6 +31,7 @@ def start_vocabai_import() -> None:
     base_url = config['base_url']
     
     # authenticate with baserow
+    # =========================
     user = config['user']
     password = config['password']
     url = f'{base_url}/api/user/token-auth/'
@@ -40,6 +41,25 @@ def start_vocabai_import() -> None:
     })
     response.raise_for_status()
     token = response.json()['token']
+
+    # list tables and ask user to pick one
+    # ====================================
+
+    url  = f'{base_url}/api/applications/'
+    response = requests.get(url, headers={
+            "Authorization": f"JWT {token}"
+    })
+    response.raise_for_status()
+    results = response.json()
+    table_list = []
+    for application in results:
+        for table in application['tables']:
+            table_id = table['id']
+            table_name = table['name']
+            entry = (table_id, table_name)
+            table_list.append(entry)
+    pprint.pprint(table_list)
+
 
     # start export job
     table_id = config['table_id']
