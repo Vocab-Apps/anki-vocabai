@@ -51,14 +51,20 @@ def start_vocabai_import() -> None:
     })
     response.raise_for_status()
     results = response.json()
-    table_list = []
+    table_ids = []
+    table_names = []
     for application in results:
+        application_name = application['name']
         for table in application['tables']:
             table_id = table['id']
-            table_name = table['name']
-            entry = (table_id, table_name)
-            table_list.append(entry)
-    pprint.pprint(table_list)
+            table_name = application_name + ' - ' + table['name']
+            table_ids.append(table_id)
+            table_names.append(table_name)
+    pprint.pprint(table_names)
+
+    chosen_table = aqt.utils.chooseList('Choose a table to import from', table_names)
+    table_id = table_ids[chosen_table]
+    print(f'chose table: {chosen_table} ({table_id})')
 
 
     # start export job
