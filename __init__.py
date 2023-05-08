@@ -68,7 +68,6 @@ def start_vocabai_import() -> None:
 
 
     # start export job
-    table_id = config['table_id']
     url = f'{base_url}/api/database/export/table/{table_id}/'
     logger.info(f'starting export job, url: {url}')
     response = requests.post(url, data={
