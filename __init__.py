@@ -11,31 +11,49 @@ import aqt.qt
 import aqt.import_export
 import aqt.utils
 import databind.json
+import aqt.operations
+import anki.collection
 
 
 from . import baserow
 from . import data
+from . import logic
 
 logger = logging.getLogger(__name__)
 
-
-def start_vocabai_import() -> None:
-
-    # load anki addon config, and deserialize using databind
+def get_config() -> data.ImportConfig:
     config = aqt.mw.addonManager.getConfig(__name__)
     import_config = databind.json.load(config, data.ImportConfig)
+    return import_config
+
+def start_vocabai_import_manual() -> None:
+    import_config = get_config()
     logger.info(import_config)
 
-    csv_tempfile = baserow.retrieve_csv_file(import_config)
+    csv_tempfile, table_id = baserow.retrieve_csv_file(import_config)
 
     # bring up anki csv import dialog
     aqt.import_export.importing.CsvImporter.do_import(aqt.mw, csv_tempfile.name)
 
-def update_vocabai_config() -> None:
+def start_vocabai_import_automatic() -> None:
+    import_config = get_config()
+    logger.info(import_config)
 
-    # load anki addon config, and deserialize using databind
-    config = aqt.mw.addonManager.getConfig(__name__)
-    import_config = databind.json.load(config, data.ImportConfig)
+    csv_tempfile, table_id = baserow.retrieve_csv_file(import_config)
+
+    # create the csv import request
+    table_import_config = import_config.table_configs[str(table_id)]
+    request = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
+
+    aqt.operations.CollectionOp(
+        parent=aqt.mw,
+        op=lambda col: col.import_csv(request),
+    ).with_backend_progress(aqt.import_export.importing.import_progress_update).success(
+        aqt.import_export.importing.show_import_log
+    ).run_in_background()    
+
+def update_vocabai_config() -> None:
+    import_config = get_config()
 
     import_config.table_configs['106'] = data.TableImportConfig(
         deck_name='Cantonese', 
@@ -48,8 +66,12 @@ def update_vocabai_config() -> None:
     aqt.utils.showInfo('Updated config')
 
 
-import_action = aqt.qt.QAction("Import from Vocab.Ai", aqt.mw)
-aqt.qt.qconnect(import_action.triggered, start_vocabai_import)
+import_action = aqt.qt.QAction("Import from Vocab.Ai - manual", aqt.mw)
+aqt.qt.qconnect(import_action.triggered, start_vocabai_import_manual)
+aqt.mw.form.menuTools.addAction(import_action)
+
+import_action = aqt.qt.QAction("Import from Vocab.Ai - automatic", aqt.mw)
+aqt.qt.qconnect(import_action.triggered, start_vocabai_import_automatic)
 aqt.mw.form.menuTools.addAction(import_action)
 
 import_action = aqt.qt.QAction("Import from Vocab.Ai - update config", aqt.mw)

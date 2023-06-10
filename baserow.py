@@ -8,7 +8,7 @@ import aqt.utils
 
 logger = logging.getLogger(__name__)
 
-# given a data.ImportConfig object, return a named temporary file containing the CSV data
+# given a data.ImportConfig object, return a named temporary file containing the CSV data, and the table_id
 def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTemporaryFile:
     logger.info('authenticate with baserow')
     base_url = import_config.api_base_url
@@ -85,5 +85,5 @@ def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTempora
     filename = filename.replace(os.sep, '/')
     logger.info(f'wrote csv data to {filename}')
 
-    return csv_tempfile
+    return csv_tempfile, table_id
 
