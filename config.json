@@ -1,5 +1,6 @@
 {
-    "base_url": "https://app.vocab.ai",
-    "user": "",
-    "password": ""
+    "api_base_url": "https://app.vocab.ai",
+    "username": "",
+    "password": "",
+    "table_configs": {}
 }
