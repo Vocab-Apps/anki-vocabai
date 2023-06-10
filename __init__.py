@@ -6,6 +6,7 @@ import tempfile
 import aqt.utils
 import aqt.progress
 import aqt.import_export
+import anki.collection.ImportCsvRequest
 
 logger = logging.getLogger(__name__)
 
