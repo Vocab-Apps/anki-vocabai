@@ -1,6 +1,18 @@
 import anki.import_export_pb2
 import aqt
+import csv
+import tempfile
 from . import data
+
+def create_csv_without_header(csv_file_path):
+    with open(csv_file_path, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        header = next(reader)
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, newline='') as temp_file:
+            writer = csv.writer(temp_file)
+            for row in reader:
+                writer.writerow(row)
+            return temp_file
 
 def get_note_type_fieldnames(model_id):
     # for the anki note type, build an index from the field name to the field index
@@ -23,7 +35,6 @@ def get_csv_file_fieldname_to_index(csv_file_path: str):
 # given a data.TableImportConfig object, create a new anki.collection.ImportCsvRequest object
 def create_import_csv_request(csv_file_path: str, table_import_config: data.TableImportConfig) -> anki.import_export_pb2.ImportCsvRequest:
     request = anki.import_export_pb2.ImportCsvRequest()
-    request.path = csv_file_path
     # request.metadata is of type anki.import_export_pb2.CsvMetadata
     request.metadata.delimiter = anki.import_export_pb2.CsvMetadata.Delimiter.COMMA
     request.metadata.dupe_resolution = anki.import_export_pb2.CsvMetadata.DupeResolution.UPDATE
@@ -50,5 +61,8 @@ def create_import_csv_request(csv_file_path: str, table_import_config: data.Tabl
             csv_field_name_index = csv_field_name_to_index_map[mapped_csv_field_name] + 1
             request.metadata.global_notetype.field_columns.append(csv_field_name_index)
 
+    # remove the header
+    csv_tempfile_no_header = create_csv_without_header(csv_file_path)
+    request.path = csv_tempfile_no_header.name
 
-    return request
+    return request, csv_tempfile_no_header

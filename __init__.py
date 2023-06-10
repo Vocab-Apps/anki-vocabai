@@ -43,7 +43,7 @@ def start_vocabai_import_automatic() -> None:
 
     # create the csv import request
     table_import_config = import_config.table_configs[str(table_id)]
-    request = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
+    request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
 
     aqt.operations.CollectionOp(
         parent=aqt.mw,
