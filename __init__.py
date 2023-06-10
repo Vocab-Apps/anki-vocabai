@@ -58,7 +58,7 @@ def update_vocabai_config() -> None:
     import_config.table_configs['106'] = data.TableImportConfig(
         deck_name='Cantonese', 
         note_type_name='Chinese-Words',
-        field_mapping={'Chinese': 'Chinese', 'Jyutping': 'Romanization', 'English': 'English'})
+        field_mapping={'Chinese': 'Chinese', 'Romanization': 'Jyutping', 'English': 'English'})
 
     config = databind.json.dump(import_config, data.ImportConfig)
     aqt.mw.addonManager.writeConfig(__name__, config)
