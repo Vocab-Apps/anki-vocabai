@@ -3,9 +3,9 @@ from typing import Dict
 
 @dataclass
 class TableImportConfig:
-    table_id: str
     deck_name: str
     note_type_name: str
+    field_mapping: Dict[str, str]
 
 @dataclass
 class ImportConfig:
