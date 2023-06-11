@@ -1,11 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict
 
 @dataclass
 class TableImportConfig:
     deck_name: str = None
     note_type_name: str = None
-    field_mapping: Dict[str, str] = {} # key is anki field name, value is csv field name
+    field_mapping: Dict[str, str] = field(default_factory=dict) # key is anki field name, value is csv field name
 
 @dataclass
 class ImportConfig:

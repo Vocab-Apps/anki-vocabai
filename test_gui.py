@@ -1,6 +1,6 @@
 from typing import List
-import gui
-import data
+import addon.gui
+import addon.data
 
 class TestAnkiUtils():
     def __init__(self) -> None:
@@ -21,10 +21,10 @@ class TestAnkiUtils():
 
 def test_batch_dialog_editor_template_error(qtbot):
     
-    table_import_config = data.TableImportConfig()
+    table_import_config = addon.data.TableImportConfig()
     anki_utils = TestAnkiUtils()
 
-    dialog = gui.ConfigureTableImportDialog(table_import_config, anki_utils)
+    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, anki_utils)
 
     # assert that dialog.note_type_combo contains the note types Simple, Chinese-Words
     assert dialog.note_type_combo.count() == 2
