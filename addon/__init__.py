@@ -47,6 +47,9 @@ def initialize():
         
         csv_field_names = csv_utils.get_fieldnames(csv_tempfile.name)
         table_import_config = gui.display_table_import_dialog(table_import_config, csv_field_names, anki_util_instance)
+        if table_import_config == None:
+            # user canceled
+            return
 
         # create the csv import request
         request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)

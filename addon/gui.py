@@ -20,13 +20,16 @@ class ConfigureTableImportDialog(QDialog):
         self.deck_label = QLabel("Deck:")
         self.deck_combo = QComboBox()
         self.ok_button = QPushButton("OK")
+        self.cancel_button = QPushButton("Cancel")
         self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
         layout = QVBoxLayout()
         layout.addWidget(self.note_type_label)
         layout.addWidget(self.note_type_combo)
         layout.addWidget(self.deck_label)
         layout.addWidget(self.deck_combo)
         layout.addWidget(self.ok_button)
+        layout.addWidget(self.cancel_button)
 
         # add layout for field mappings
         self.field_mappings_layout = QVBoxLayout()
@@ -44,7 +47,7 @@ class ConfigureTableImportDialog(QDialog):
 
     def load_model(self, model: data.TableImportConfig):
         self.model = model
-        
+
         # configure controls based on model
         if model.note_type_name != None:
             self.note_type_combo.setCurrentText(model.note_type_name)
