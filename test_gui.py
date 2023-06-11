@@ -98,3 +98,15 @@ def test_configure_table_import_dialog_field_mapping(qtbot):
     simplified_combobox.setCurrentText(dialog.UNMAPPED_FIELD_NAME)
     assert dialog.model.field_mapping == {'Traditional': 'C'}
         
+
+def test_configure_table_import_dialog_defaults(qtbot):
+    
+    table_import_config = addon.data.TableImportConfig()
+    anki_utils = TestAnkiUtils()
+
+    csv_fieldnames = ['A', 'B', 'C']
+    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, csv_fieldnames, anki_utils)
+
+    # check the model, make sure note type simple is selected, and deck is Italian
+    assert dialog.model.note_type_name == 'Simple'
+    assert dialog.model.deck_name == 'Italian'

@@ -43,10 +43,21 @@ class ConfigureTableImportDialog(QDialog):
         self.deck_combo.currentIndexChanged.connect(self.deck_selected)
 
     def load_model(self, model: data.TableImportConfig):
-        # configure controls based on model
-        self.note_type_combo.setCurrentText(model.note_type_name)
-        self.deck_combo.setCurrentText(model.deck_name)
         self.model = model
+        
+        # configure controls based on model
+        if model.note_type_name != None:
+            self.note_type_combo.setCurrentText(model.note_type_name)
+        else:
+            # ensure model gets updated with the first note type available
+            self.note_type_selected()
+
+        if model.deck_name != None:
+            self.deck_combo.setCurrentText(model.deck_name)
+        else:
+            # ensure model gets updated with the first deck available
+            self.deck_selected()
+
 
     def populate_note_type_combo(self):
         note_types = self.anki_utils.get_note_type_list()
