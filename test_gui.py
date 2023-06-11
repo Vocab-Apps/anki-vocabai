@@ -48,3 +48,21 @@ def test_configure_table_import_dialog_choose_note_type(qtbot):
 
     dialog.note_type_combo.setCurrentText('Simple')
     assert dialog.model.note_type_name == 'Simple'
+
+def test_configure_table_import_dialog_choose_deck(qtbot):
+    
+    table_import_config = addon.data.TableImportConfig()
+    anki_utils = TestAnkiUtils()
+
+    csv_fieldnames = ['Chinese', 'Jyutping', 'English']
+    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, csv_fieldnames, anki_utils)
+
+    dialog.deck_combo.setCurrentText('Cantonese')
+    assert dialog.model.deck_name == 'Cantonese'
+
+    # now set the deck to Italian
+    dialog.deck_combo.setCurrentText('Italian')
+    assert dialog.model.deck_name == 'Italian'
+
+
+        
