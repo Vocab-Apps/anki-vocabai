@@ -77,23 +77,21 @@ class ConfigureTableImportDialog(QDialog):
             self.field_mappings_layout.addWidget(combo)
             # when the combo box is changed, call a lambda function which contains field
             # this will capture the current value of field in the lambda function
-            combo.currentIndexChanged.connect(lambda field=field: self.field_mapping_selected(field, combo))
+            combo.currentTextChanged.connect(self.get_field_mapping_text_changed_lambda(field, combo))
 
 
     def deck_selected(self):
         deck_name = self.deck_combo.currentText()
         self.model.deck_name = deck_name
 
-    def field_mapping_selected(self, field, combo):
-        # update the model with the new field mapping
-        csv_field_name = combo.currentText()
-        logger.debug('field_mapping_selected: field=%s, csv_field_name=%s', field, csv_field_name)
-        if csv_field_name == self.UNMAPPED_FIELD_NAME:
-            if field in self.model.field_mapping:
-                del self.model.field_mapping[field]
-        else:
-            self.model.field_mapping[field] = csv_field_name
-
+    def get_field_mapping_text_changed_lambda(self, anki_field_name: str, combo: QComboBox):
+        def current_text_changed(csv_field_name: str):
+            if csv_field_name == self.UNMAPPED_FIELD_NAME:
+                if anki_field_name in self.model.field_mapping:
+                    del self.model.field_mapping[anki_field_name]
+            else:
+                self.model.field_mapping[anki_field_name] = csv_field_name
+        return current_text_changed
 
     
 def display_table_import_dialog_get_table_import_config(model: data.TableImportConfig, parent=None) -> data.TableImportConfig:

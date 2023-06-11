@@ -68,7 +68,7 @@ def test_configure_table_import_dialog_choose_deck(qtbot):
     dialog.deck_combo.setCurrentText('Italian')
     assert dialog.model.deck_name == 'Italian'
 
-def test_configure_table_import_dialog_field_mapping_initial_state(qtbot):
+def test_configure_table_import_dialog_field_mapping(qtbot):
     table_import_config = addon.data.TableImportConfig()
     anki_utils = TestAnkiUtils()
 
@@ -83,5 +83,8 @@ def test_configure_table_import_dialog_field_mapping_initial_state(qtbot):
     assert [simplified_combobox.itemText(i) for i in range(simplified_combobox.count())] == [
         dialog.UNMAPPED_FIELD_NAME, 'A', 'B', 'C']
 
+    # choose field B
+    simplified_combobox.setCurrentText('B')
 
+    assert dialog.model.field_mapping == {'Simplified': 'B'}
         
