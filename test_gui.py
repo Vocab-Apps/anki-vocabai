@@ -17,7 +17,7 @@ class TestAnkiUtils():
         return field_list_map[note_type_name]
 
     def get_deck_list(self) -> List[str]:
-        return ['Mandarin', 'Cantonese']
+        return ['Italian', 'Mandarin', 'Cantonese']
 
 def test_batch_dialog_editor_template_error(qtbot):
     
@@ -27,9 +27,12 @@ def test_batch_dialog_editor_template_error(qtbot):
     dialog = addon.gui.ConfigureTableImportDialog(table_import_config, anki_utils)
 
     # assert that dialog.note_type_combo contains the note types Simple, Chinese-Words
-    assert dialog.note_type_combo.count() == 2
-    assert dialog.note_type_combo.itemText(0) == 'Simple'
-    assert dialog.note_type_combo.itemText(1) == 'Chinese-Words'
+    all_note_types = [dialog.note_type_combo.itemText(i) for i in range(dialog.note_type_combo.count())]
+    assert all_note_types == ['Simple', 'Chinese-Words']
+
+    # assert that dialog.deck_combo contains the decks Italian, Mandarin, Cantonese
+    all_decks = [dialog.deck_combo.itemText(i) for i in range(dialog.deck_combo.count())]
+    assert all_decks == ['Italian', 'Mandarin', 'Cantonese']
 
 
     # dialog.exec()
