@@ -3,7 +3,7 @@
 VERSION_NUMBER=$1 # for example 0.1
 GIT_TAG=v${VERSION_NUMBER}
 
-echo "ANKI_VOCABAI_VERSION='${VERSION_NUMBER}'" > version.py
+echo "ANKI_VOCABAI_VERSION='${VERSION_NUMBER}'" > addon/version.py
 git commit -a -m "upgraded version to ${VERSION_NUMBER}"
 git push
 git tag -a ${GIT_TAG} -m "version ${GIT_TAG}"
