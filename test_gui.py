@@ -87,4 +87,14 @@ def test_configure_table_import_dialog_field_mapping(qtbot):
     simplified_combobox.setCurrentText('B')
 
     assert dialog.model.field_mapping == {'Simplified': 'B'}
+
+    # find the Traditional combobox, and set it to C
+    traditional_combobox = dialog.findChild(QComboBox, 'Traditional')
+    traditional_combobox.setCurrentText('C')
+    # check that field_mapping is now correct
+    assert dialog.model.field_mapping == {'Simplified': 'B', 'Traditional': 'C'}
+
+    # now, unmap the Simplified field
+    simplified_combobox.setCurrentText(dialog.UNMAPPED_FIELD_NAME)
+    assert dialog.model.field_mapping == {'Traditional': 'C'}
         
