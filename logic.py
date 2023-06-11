@@ -1,18 +1,7 @@
 import anki.import_export_pb2
 import aqt
-import csv
-import tempfile
 from . import data
-
-def create_csv_without_header(csv_file_path):
-    with open(csv_file_path, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        header = next(reader)
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, newline='') as temp_file:
-            writer = csv.writer(temp_file)
-            for row in reader:
-                writer.writerow(row)
-            return temp_file
+from . import csv_utils
 
 def get_note_type_fieldnames(model_id):
     # for the anki note type, build an index from the field name to the field index
@@ -20,17 +9,6 @@ def get_note_type_fieldnames(model_id):
     fields = model['flds']
     field_names = [x['name'] for x in fields]
     return field_names
-
-def get_csv_file_fieldname_to_index(csv_file_path: str):
-    # get the list of fields in the csv_file_path CSV file
-    with open(csv_file_path, 'r') as csv_file:
-        csv_header = csv_file.readline()
-        csv_fields = csv_header.split(',')
-        csv_fields = [x.strip() for x in csv_fields]
-
-        # create dict which maps field name to field index
-        field_name_to_index = {field_name: index for index, field_name in enumerate(csv_fields)}
-        return field_name_to_index
 
 # given a data.TableImportConfig object, create a new anki.collection.ImportCsvRequest object
 def create_import_csv_request(csv_file_path: str, table_import_config: data.TableImportConfig) -> anki.import_export_pb2.ImportCsvRequest:
@@ -49,7 +27,7 @@ def create_import_csv_request(csv_file_path: str, table_import_config: data.Tabl
 
     # add field mapping
     anki_field_names = get_note_type_fieldnames(model_id)
-    csv_field_name_to_index_map = get_csv_file_fieldname_to_index(csv_file_path)
+    csv_field_name_to_index_map = csv_utils.get_fieldname_to_index(csv_file_path)
 
     for anki_field_name in anki_field_names:
         # populate request.metadata.global_notetype.field_columns
@@ -62,7 +40,7 @@ def create_import_csv_request(csv_file_path: str, table_import_config: data.Tabl
             request.metadata.global_notetype.field_columns.append(csv_field_name_index)
 
     # remove the header
-    csv_tempfile_no_header = create_csv_without_header(csv_file_path)
+    csv_tempfile_no_header = csv_utils.create_csv_without_header(csv_file_path)
     request.path = csv_tempfile_no_header.name
 
     return request, csv_tempfile_no_header
