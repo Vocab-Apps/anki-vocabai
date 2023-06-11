@@ -9,7 +9,7 @@ class TableImportConfig:
 
 @dataclass
 class ImportConfig:
-    table_configs: Dict[str, TableImportConfig]
+    table_configs: Dict[str, TableImportConfig] = field(default_factory=dict)
     api_base_url: str = 'https://app.vocab.ai'
     username: str = None
     password: str = None
