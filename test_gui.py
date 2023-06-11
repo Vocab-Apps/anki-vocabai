@@ -110,3 +110,6 @@ def test_configure_table_import_dialog_defaults(qtbot):
     # check the model, make sure note type simple is selected, and deck is Italian
     assert dialog.model.note_type_name == 'Simple'
     assert dialog.model.deck_name == 'Italian'
+
+    # makes sure that field_mappings_layout has been populated
+    assert dialog.field_mappings_layout.count() > 0

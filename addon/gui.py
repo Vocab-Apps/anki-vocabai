@@ -71,6 +71,7 @@ class ConfigureTableImportDialog(QDialog):
         self.deck_combo.addItems(decks)
 
     def note_type_selected(self):
+        logger.debug("note_type_selected")
         note_type = self.note_type_combo.currentText()
         self.model.note_type_name = note_type
         self.note_type_fields = self.anki_utils.get_field_list_for_note_type(note_type)
