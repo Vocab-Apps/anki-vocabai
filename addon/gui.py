@@ -1,7 +1,10 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton, QVBoxLayout
 from typing import List
+import logging
 from . import anki_utils
 from . import data
+
+logger = logging.getLogger(__name__)
 
 class ConfigureTableImportDialog(QDialog):
     UNMAPPED_FIELD_NAME = '(Unmapped)'
@@ -84,6 +87,7 @@ class ConfigureTableImportDialog(QDialog):
     def field_mapping_selected(self, field, combo):
         # update the model with the new field mapping
         csv_field_name = combo.currentText()
+        logger.debug('field_mapping_selected: field=%s, csv_field_name=%s', field, csv_field_name)
         if csv_field_name == self.UNMAPPED_FIELD_NAME:
             if field in self.model.field_mapping:
                 del self.model.field_mapping[field]

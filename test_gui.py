@@ -1,6 +1,10 @@
 from typing import List
+import logging
 import addon.gui
 import addon.data
+from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton, QVBoxLayout
+
+logger = logging.getLogger(__name__)
 
 class TestAnkiUtils():
     def __init__(self) -> None:
@@ -63,6 +67,21 @@ def test_configure_table_import_dialog_choose_deck(qtbot):
     # now set the deck to Italian
     dialog.deck_combo.setCurrentText('Italian')
     assert dialog.model.deck_name == 'Italian'
+
+def test_configure_table_import_dialog_field_mapping_initial_state(qtbot):
+    table_import_config = addon.data.TableImportConfig()
+    anki_utils = TestAnkiUtils()
+
+    csv_fieldnames = ['A', 'B', 'C']
+    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, csv_fieldnames, anki_utils)
+
+    # pick note type Chinese-Words
+    dialog.note_type_combo.setCurrentText('Chinese-Words')
+
+    # we have 3 csv fields, each combox box representing an anki field should have 4 entries
+    simplified_combobox = dialog.findChild(QComboBox, 'Simplified')
+    assert [simplified_combobox.itemText(i) for i in range(simplified_combobox.count())] == [
+        dialog.UNMAPPED_FIELD_NAME, 'A', 'B', 'C']
 
 
         
