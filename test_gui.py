@@ -19,12 +19,13 @@ class TestAnkiUtils():
     def get_deck_list(self) -> List[str]:
         return ['Italian', 'Mandarin', 'Cantonese']
 
-def test_batch_dialog_editor_template_error(qtbot):
+def test_configure_table_import_dialog(qtbot):
     
     table_import_config = addon.data.TableImportConfig()
     anki_utils = TestAnkiUtils()
 
-    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, anki_utils)
+    csv_fieldnames = ['Chinese', 'Jyutping', 'English']
+    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, csv_fieldnames, anki_utils)
 
     # assert that dialog.note_type_combo contains the note types Simple, Chinese-Words
     all_note_types = [dialog.note_type_combo.itemText(i) for i in range(dialog.note_type_combo.count())]
@@ -34,5 +35,16 @@ def test_batch_dialog_editor_template_error(qtbot):
     all_decks = [dialog.deck_combo.itemText(i) for i in range(dialog.deck_combo.count())]
     assert all_decks == ['Italian', 'Mandarin', 'Cantonese']
 
+def test_configure_table_import_dialog_choose_note_type(qtbot):
+    
+    table_import_config = addon.data.TableImportConfig()
+    anki_utils = TestAnkiUtils()
 
-    # dialog.exec()
+    csv_fieldnames = ['Chinese', 'Jyutping', 'English']
+    dialog = addon.gui.ConfigureTableImportDialog(table_import_config, csv_fieldnames, anki_utils)
+
+    dialog.note_type_combo.setCurrentText('Chinese-Words')
+    assert dialog.model.note_type_name == 'Chinese-Words'
+
+    dialog.note_type_combo.setCurrentText('Simple')
+    assert dialog.model.note_type_name == 'Simple'
