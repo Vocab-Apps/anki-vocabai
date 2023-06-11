@@ -94,8 +94,8 @@ class ConfigureTableImportDialog(QDialog):
         return current_text_changed
 
     
-def display_table_import_dialog_get_table_import_config(model: data.TableImportConfig, parent=None) -> data.TableImportConfig:
-    dialog = ConfigureTableImportDialog(model, parent)
+def display_table_import_dialog(model: data.TableImportConfig, csv_field_names: List[str], parent=None) -> data.TableImportConfig:
+    dialog = ConfigureTableImportDialog(model, csv_field_names, parent)
     result = dialog.exec_()
     if result == QDialog.Accepted:
         return dialog.model

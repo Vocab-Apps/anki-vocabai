@@ -12,6 +12,9 @@ import anki.collection
 from . import baserow
 from . import data
 from . import logic
+from . import csv_utils
+from . import gui
+from . import anki_utils
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +34,21 @@ def initialize():
         aqt.import_export.importing.CsvImporter.do_import(aqt.mw, csv_tempfile.name)
 
     def start_vocabai_import_automatic() -> None:
+        anki_util_instance = anki_utils.AnkiUtils()
         import_config = get_config()
         logger.info(import_config)
 
         csv_tempfile, table_id = baserow.retrieve_csv_file(import_config)
 
+        table_import_config = data.TableImportConfig()
+        if str(table_id) in import_config.table_configs:
+            table_import_config = import_config.table_configs[str(table_id)]
+
+        
+        csv_field_names = csv_utils.get_fieldnames(csv_tempfile.name)
+        table_import_config = gui.display_table_import_dialog(table_import_config, csv_field_names, anki_util_instance)
+
         # create the csv import request
-        table_import_config = import_config.table_configs[str(table_id)]
         request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
 
         aqt.operations.CollectionOp(
