@@ -51,15 +51,13 @@ class ConfigureTableImportDialog(QDialog):
         # configure controls based on model
         if model.note_type_name != None:
             self.note_type_combo.setCurrentText(model.note_type_name)
-        else:
-            # ensure model gets updated with the first note type available
-            self.note_type_selected()
+        # make sure that callback fires, to update the model
+        self.note_type_selected()
 
         if model.deck_name != None:
             self.deck_combo.setCurrentText(model.deck_name)
-        else:
-            # ensure model gets updated with the first deck available
-            self.deck_selected()
+        # make sure to fire callbacks, to update model
+        self.deck_selected()
 
 
     def populate_note_type_combo(self):
