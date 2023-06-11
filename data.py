@@ -3,9 +3,9 @@ from typing import Dict
 
 @dataclass
 class TableImportConfig:
-    deck_name: str
-    note_type_name: str
-    field_mapping: Dict[str, str] # key is anki field name, value is csv field name
+    deck_name: str = None
+    note_type_name: str = None
+    field_mapping: Dict[str, str] = {} # key is anki field name, value is csv field name
 
 @dataclass
 class ImportConfig:
