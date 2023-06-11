@@ -59,6 +59,7 @@ def initialize():
         request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
 
         # save table_import_config
+        import_config.last_import_table_id = table_id
         import_config.table_configs[str(table_id)] = table_import_config
         write_config(import_config)
 

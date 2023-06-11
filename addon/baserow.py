@@ -42,7 +42,10 @@ def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTempora
             table_ids.append(table_id)
             table_names.append(table_name)
 
-    chosen_table = aqt.utils.chooseList('Choose a table to import from', table_names)
+    startrow = 0
+    if import_config.last_import_table_id != None:
+        startrow = table_ids.index(import_config.last_import_table_id)
+    chosen_table = aqt.utils.chooseList('Choose a table to import from', table_names, startrow=startrow)
     table_id = table_ids[chosen_table]
     print(f'chose table: {chosen_table} ({table_id})')
 
