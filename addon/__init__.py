@@ -24,6 +24,10 @@ def initialize():
         import_config = databind.json.load(config, data.ImportConfig)
         return import_config
 
+    def write_config(import_config: data.ImportConfig) -> None:
+        config = databind.json.dump(import_config, data.ImportConfig)
+        aqt.mw.addonManager.writeConfig(__name__, config)
+
     def start_vocabai_import_manual() -> None:
         import_config = get_config()
         logger.info(import_config)
@@ -53,6 +57,10 @@ def initialize():
 
         # create the csv import request
         request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
+
+        # save table_import_config
+        import_config.table_configs[str(table_id)] = table_import_config
+        write_config(import_config)
 
         aqt.operations.CollectionOp(
             parent=aqt.mw,
