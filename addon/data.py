@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Optional
 
 API_URL_VOCABAI = 'https://app.vocab.ai'
 API_URL_BASEROW = 'https://api.baserow.io'
@@ -32,7 +32,6 @@ class BaserowConfig:
 class ImportConfig:
     baserow_config: BaserowConfig = field(default_factory=BaserowConfig)
     table_configs: Dict[str, TableImportConfig] = field(default_factory=dict)
-    last_import_table_id: int = None
-
+    last_import_table_id: Optional[int] = None
 
 

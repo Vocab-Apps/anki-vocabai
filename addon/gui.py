@@ -15,7 +15,7 @@ class ConfigureBaserowDialog(QDialog):
         self.username_edit.setText(config.username)
         self.password_label = QLabel("Password:")
         self.password_edit = QLineEdit()
-        self.password_edit.setEchoMode(QLineEdit.Password)
+        self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_edit.setText(config.password)
         self.api_url_label = QLabel("API URL:")
         self.api_url_radio_group = QButtonGroup()
@@ -198,7 +198,16 @@ class ConfigureTableImportDialog(QDialog):
 def display_table_import_dialog(model: data.TableImportConfig, csv_field_names: List[str], parent=None) -> data.TableImportConfig:
     dialog = ConfigureTableImportDialog(model, csv_field_names, parent)
     result = dialog.exec_()
-    if result == QDialog.Accepted:
+    if result == QDialog.DialogCode.Accepted:
         return dialog.model
+    else:
+        return None
+
+
+def display_baserow_config_dialog(config: data.BaserowConfig, parent=None) -> data.BaserowConfig:
+    dialog = ConfigureBaserowDialog(config, parent)
+    result = dialog.exec()
+    if result == QDialog.DialogCode.Accepted:
+        return dialog.config
     else:
         return None

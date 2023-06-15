@@ -83,6 +83,17 @@ def initialize():
 
         aqt.utils.showInfo('Updated config')
 
+    def display_baserow_config_dialog():
+        import_config = get_config()
+        baserow_config = import_config.baserow_config
+        baserow_config = gui.display_baserow_config_dialog(baserow_config)
+        if baserow_config == None:
+            # user canceled, don't persist config
+            return
+
+        import_config.baserow_config = baserow_config
+        write_config(import_config)
+
 
     import_action = aqt.qt.QAction("Import from Vocab.Ai - manual", aqt.mw)
     aqt.qt.qconnect(import_action.triggered, start_vocabai_import_manual)
@@ -95,3 +106,8 @@ def initialize():
     import_action = aqt.qt.QAction("Import from Vocab.Ai - update config", aqt.mw)
     aqt.qt.qconnect(import_action.triggered, update_vocabai_config)
     aqt.mw.form.menuTools.addAction(import_action)
+
+    # add menu entry for baserow config
+    config_action = aqt.qt.QAction("Import from Vocab.Ai - Configure", aqt.mw)
+    aqt.qt.qconnect(config_action.triggered, display_baserow_config_dialog)
+    aqt.mw.form.menuTools.addAction(config_action)
