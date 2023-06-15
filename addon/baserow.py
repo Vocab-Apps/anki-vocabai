@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 # given a data.ImportConfig object, return a named temporary file containing the CSV data, and the table_id
 def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTemporaryFile:
     logger.info('authenticate with baserow')
-    base_url = import_config.api_base_url
+    base_url = import_config.baserow_config.api_base_url
     
     # authenticate with baserow
     # =========================
     url = f'{base_url}/api/user/token-auth/'
     response = requests.post(url, data={
-        'email': import_config.username,
-        'password': import_config.password
+        'email': import_config.baserow_config.username,
+        'password': import_config.baserow_config.password
     })
     response.raise_for_status()
     token = response.json()['token']

@@ -197,7 +197,7 @@ class ConfigureTableImportDialog(QDialog):
     
 def display_table_import_dialog(model: data.TableImportConfig, csv_field_names: List[str], parent=None) -> data.TableImportConfig:
     dialog = ConfigureTableImportDialog(model, csv_field_names, parent)
-    result = dialog.exec_()
+    result = dialog.exec()
     if result == QDialog.DialogCode.Accepted:
         return dialog.model
     else:

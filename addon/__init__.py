@@ -70,18 +70,6 @@ def initialize():
             aqt.import_export.importing.show_import_log
         ).run_in_background()    
 
-    def update_vocabai_config() -> None:
-        import_config = get_config()
-
-        import_config.table_configs['106'] = data.TableImportConfig(
-            deck_name='Cantonese', 
-            note_type_name='Chinese-Words',
-            field_mapping={'Chinese': 'Chinese', 'Romanization': 'Jyutping', 'English': 'English'})
-
-        config = databind.json.dump(import_config, data.ImportConfig)
-        aqt.mw.addonManager.writeConfig(__name__, config)
-
-        aqt.utils.showInfo('Updated config')
 
     def display_baserow_config_dialog():
         import_config = get_config()
@@ -101,10 +89,6 @@ def initialize():
 
     import_action = aqt.qt.QAction("Import from Vocab.Ai - automatic", aqt.mw)
     aqt.qt.qconnect(import_action.triggered, start_vocabai_import_automatic)
-    aqt.mw.form.menuTools.addAction(import_action)
-
-    import_action = aqt.qt.QAction("Import from Vocab.Ai - update config", aqt.mw)
-    aqt.qt.qconnect(import_action.triggered, update_vocabai_config)
     aqt.mw.form.menuTools.addAction(import_action)
 
     # add menu entry for baserow config
