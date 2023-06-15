@@ -113,3 +113,23 @@ def test_configure_table_import_dialog_defaults(qtbot):
 
     # makes sure that field_mappings_layout has been populated
     assert dialog.field_mappings_layout.count() > 0
+
+
+def test_configure_baserow_config_default(qtbot):
+    
+    config = addon.data.BaserowConfig()
+
+    dialog = addon.gui.ConfigureBaserowDialog(config)
+
+    # check that the default values are correct
+    assert dialog.app_vocab_radio.isChecked()
+    assert dialog.config.api_base_url == 'https://app.vocab.ai'
+
+    # switch to the baserow api url
+    dialog.baserow_io_radio.setChecked(True)
+    assert dialog.config.api_base_url == 'https://api.baserow.io'
+
+    # switch to custom url
+    dialog.custom_radio.setChecked(True)
+    dialog.custom_edit.setText('https://custom.url')
+    assert dialog.config.api_base_url == 'https://custom.url'
