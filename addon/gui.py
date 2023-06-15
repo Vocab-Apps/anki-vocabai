@@ -62,7 +62,7 @@ class ConfigureBaserowDialog(QDialog):
 
     def on_ok_button_clicked(self):
         try:
-            self.config.validate()
+            self.validate_config()
             self.accept()
         except ValueError as e:
             QMessageBox.warning(self, "Validation Error", str(e))
@@ -75,6 +75,9 @@ class ConfigureBaserowDialog(QDialog):
                 self.custom_edit.setEnabled(False)
             elif self.custom_radio.isChecked():
                 self.custom_edit.setEnabled(True)
+
+    def validate_config(self):
+        self.config.validate()
 
     @property
     def config(self) -> data.BaserowConfig:

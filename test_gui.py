@@ -1,4 +1,5 @@
 from typing import List
+import pytest
 import logging
 import addon.gui
 import addon.data
@@ -133,3 +134,15 @@ def test_configure_baserow_config_default(qtbot):
     dialog.custom_radio.setChecked(True)
     dialog.custom_edit.setText('https://custom.url')
     assert dialog.config.api_base_url == 'https://custom.url'
+
+    # calling validate_config should throw an exception, username field is empty
+    with pytest.raises(Exception):
+        dialog.validate_config()
+
+    # set username
+    dialog.username_edit.setText('user@gmail.com')
+    dialog.password_edit.setText('pw1')
+
+    # calling validate_config should not throw an exception
+    dialog.validate_config()
+    
