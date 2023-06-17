@@ -93,6 +93,82 @@ class ConfigureBaserowDialog(QDialog):
         return config
 
 
+class DatabaseTableViewDialog(QDialog):
+    def __init__(self, databases: List[data.Database], get_view_list_fn, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Select Database, Table, and View")
+        self.setModal(True)
+
+        self.database_list = databases
+        self.get_view_list_fn = get_view_list_fn
+
+        self.database_label = QLabel("Database:")
+        self.database_combo = QComboBox()
+        for database in databases:
+            self.database_combo.addItem(database.name, database)
+
+        self.table_label = QLabel("Table:")
+        self.table_combo = QComboBox()
+
+        self.view_label = QLabel("View:")
+        self.view_combo = QComboBox()
+
+        self.ok_button = QPushButton("OK")
+        self.cancel_button = QPushButton("Cancel")
+
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
+
+        # populate the combo boxes first
+        self.populate_table_combo(0)
+        self.populate_view_combo(0)
+
+        self.database_combo.currentIndexChanged.connect(self.populate_table_combo)
+        self.table_combo.currentIndexChanged.connect(self.populate_view_combo)
+
+        layout = QVBoxLayout()
+        database_layout = QHBoxLayout()
+        database_layout.addWidget(self.database_label)
+        database_layout.addWidget(self.database_combo)
+        layout.addLayout(database_layout)
+
+        table_layout = QHBoxLayout()
+        table_layout.addWidget(self.table_label)
+        table_layout.addWidget(self.table_combo)
+        layout.addLayout(table_layout)
+
+        view_layout = QHBoxLayout()
+        view_layout.addWidget(self.view_label)
+        view_layout.addWidget(self.view_combo)
+        layout.addLayout(view_layout)
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+        layout.addLayout(button_layout)
+
+        self.setLayout(layout)
+
+    def populate_table_combo(self, index):
+        database = self.database_combo.currentData()
+        self.table_combo.clear()
+        for table in database.tables:
+            self.table_combo.addItem(table.name, table)
+
+    def populate_view_combo(self, index):
+        table = self.table_combo.currentData()
+        view_list = self.get_view_list_fn(table)
+        self.view_combo.clear()
+        # add default view
+        self.view_combo.addItem("Default", data.View(id=None, name='Default'))
+        for view in view_list:
+            self.view_combo.addItem(view.name, view)
+
+    def get_config(self) -> data.DatabaseTableViewConfig:
+        database = self.database_combo.currentData()
+        table = self.table_combo.currentData()
+        view = self.view_combo.currentData()
+        return data.DatabaseTableViewConfig(database_id=database.id, table_id=table.id, view_id=view.id)
 
 class ConfigureTableImportDialog(QDialog):
     UNMAPPED_FIELD_NAME = '(Unmapped)'

@@ -146,3 +146,29 @@ def test_configure_baserow_config_default(qtbot):
     # calling validate_config should not throw an exception
     dialog.validate_config()
     
+
+def test_database_table_view_dialog(qtbot):
+    database_list = [
+        addon.data.Database(id=1, name='db1', tables=[
+            addon.data.Table(id=10, name='tableA'),
+            addon.data.Table(id=11, name='tableB'),
+        ]),
+        addon.data.Database(id=2, name='db2', tables=[
+            addon.data.Table(id=20, name='tableC'),
+        ])    
+    ]
+
+    def get_view_list_fn(table: addon.data.Table):
+        if table.id == 11:
+            return [addon.data.View(id=100, name='view1'), addon.data.View(id=101, name='view2')]
+        else:
+            return []
+
+    dialog = addon.gui.DatabaseTableViewDialog(database_list, get_view_list_fn)
+    # print(dir(dialog))
+    
+    # the default config should be db1, tableA, and empty view
+    expected_databasetableviewconfig = addon.data.DatabaseTableViewConfig(
+        database_id=1, table_id=10, view_id=None)
+    
+    assert dialog.get_config() == expected_databasetableviewconfig

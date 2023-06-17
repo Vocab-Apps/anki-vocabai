@@ -11,6 +11,12 @@ class TableImportConfig:
     field_mapping: Dict[str, str] = field(default_factory=dict) # key is anki field name, value is csv field name
 
 @dataclass
+class DatabaseTableViewConfig:
+    database_id: int = None
+    table_id: int = None
+    view_id: int = None
+
+@dataclass
 class BaserowConfig:
     api_base_url: str = 'https://app.vocab.ai'
     username: str = None
@@ -34,4 +40,18 @@ class ImportConfig:
     table_configs: Dict[str, TableImportConfig] = field(default_factory=dict)
     last_import_table_id: Optional[int] = None
 
+@dataclass
+class Table:
+    id: int
+    name: str
 
+@dataclass
+class Database:
+    id: int
+    name: str
+    tables: list[Table]
+
+@dataclass
+class View:
+    id: int
+    name: str

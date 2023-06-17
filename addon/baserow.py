@@ -24,6 +24,42 @@ def retrieve_authentication_token(import_config: data.ImportConfig) -> str:
     return token
 
 
+# given an ImportConfig and Table object, return a list of Views
+def get_view_list(import_config: data.ImportConfig, table: data.Table, token: str) -> list[data.View]:
+    url = f'{import_config.baserow_config.api_base_url}/api/database/views/table/{table.id}/'
+    token = retrieve_authentication_token(import_config)
+    response = requests.get(url, headers={
+            "Authorization": f"JWT {token}"
+    })
+    response.raise_for_status()
+    results = response.json()
+    view_list = []
+    for view in results:
+        view = data.View(id=view['id'], name=view['name'])
+        view_list.append(view)
+    return view_list
+
+# given an authentication token, return a list of data.Database objects
+def build_database_list(import_config: data.ImportConfig, token: str) -> list[data.Database]:
+    # list tables and ask user to pick one
+    # ====================================
+
+    url  = f'{import_config.baserow_config.api_base_url}/api/applications/'
+    response = requests.get(url, headers={
+            "Authorization": f"JWT {token}"
+    })
+    response.raise_for_status()
+    results = response.json()
+    database_list = []
+    for application in results:
+        database = data.Database(id=application['id'], name=application['name'], tables=[])
+        application_name = application['name']
+        for table in application['tables']:
+            table = data.Table(id=table['id'], name=table['name'])
+            database.tables.append(table)
+        database_list.append(database)
+    return database_list
+
 # given a data.ImportConfig object, return a named temporary file containing the CSV data, and the table_id
 def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTemporaryFile:
     logger.info('authenticate with baserow')
@@ -31,24 +67,10 @@ def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTempora
     
     token = retrieve_authentication_token(import_config)
 
-    # list tables and ask user to pick one
-    # ====================================
-
-    url  = f'{base_url}/api/applications/'
-    response = requests.get(url, headers={
-            "Authorization": f"JWT {token}"
-    })
-    response.raise_for_status()
-    results = response.json()
-    table_ids = []
-    table_names = []
-    for application in results:
-        application_name = application['name']
-        for table in application['tables']:
-            table_id = table['id']
-            table_name = application_name + ' - ' + table['name']
-            table_ids.append(table_id)
-            table_names.append(table_name)
+    # retrieve database list
+    # ======================
+    database_list = build_database_list(import_config, token)
+    
 
     startrow = 0
     if import_config.last_import_table_id != None:
