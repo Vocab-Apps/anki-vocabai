@@ -49,12 +49,15 @@ def initialize():
                 return baserow.get_view_list(import_config, table)
             return get_view_list
         database_table_view_config = gui.display_database_table_view_dialog(database_list, import_config.last_import, build_get_view_list_fn(import_config))
+        if database_table_view_config == None:
+            # user canceled
+            return
 
         csv_tempfile = baserow.retrieve_csv_file(import_config, database_table_view_config)
 
         table_import_config = data.TableImportConfig()
-        if database_table_view_config in import_config.table_configs:
-            table_import_config = import_config.table_configs[database_table_view_config]
+        if database_table_view_config.hash_key() in import_config.table_configs:
+            table_import_config = import_config.table_configs[database_table_view_config.hash_key()]
 
         
         csv_field_names = csv_utils.get_fieldnames(csv_tempfile.name)
@@ -68,7 +71,7 @@ def initialize():
 
         # save table_import_config
         import_config.last_import = database_table_view_config
-        import_config.table_configs[database_table_view_config] = table_import_config
+        import_config.table_configs[database_table_view_config.hash_key()] = table_import_config
         write_config(import_config)
 
         aqt.operations.CollectionOp(

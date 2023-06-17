@@ -10,11 +10,14 @@ class TableImportConfig:
     note_type_name: str = None
     field_mapping: Dict[str, str] = field(default_factory=dict) # key is anki field name, value is csv field name
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class DatabaseTableViewConfig:
     database_id: Optional[int] = None
     table_id: Optional[int] = None
     view_id: Optional[int] = None
+
+    def hash_key(self):
+        return str(self.__hash__())
 
 @dataclass
 class BaserowConfig:
@@ -37,7 +40,7 @@ class BaserowConfig:
 @dataclass
 class ImportConfig:
     baserow_config: BaserowConfig = field(default_factory=BaserowConfig)
-    table_configs: Dict[DatabaseTableViewConfig, TableImportConfig] = field(default_factory=dict)
+    table_configs: Dict[str, TableImportConfig] = field(default_factory=dict)
     last_import: Optional[DatabaseTableViewConfig] = field(default_factory=DatabaseTableViewConfig)
 
 @dataclass
