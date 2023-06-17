@@ -151,12 +151,17 @@ class DatabaseTableViewDialog(QDialog):
 
     def populate_table_combo(self, index):
         database = self.database_combo.currentData()
+        logger.debug(f'database selected: {database}')
         self.table_combo.clear()
         for table in database.tables:
             self.table_combo.addItem(table.name, table)
 
     def populate_view_combo(self, index):
         table = self.table_combo.currentData()
+        if table == None:
+            # ignore, the table combo is being cleared
+            return
+        logger.debug(f'table selected: {table}')
         view_list = self.get_view_list_fn(table)
         self.view_combo.clear()
         # add default view
