@@ -201,3 +201,20 @@ def test_database_table_view_dialog(qtbot):
     assert dialog.database_combo.currentText() == 'db1'
     assert dialog.table_combo.currentText() == 'tableB'
     assert dialog.view_combo.currentText() == 'Default'
+
+    # put incorrect data in the defaults
+    previous_selection = addon.data.DatabaseTableViewConfig(
+        database_id=1, table_id=42, view_id=None)
+    dialog = addon.gui.DatabaseTableViewDialog(database_list, previous_selection, get_view_list_fn)
+    assert dialog.database_combo.currentText() == 'db1'
+    assert dialog.table_combo.currentText() == 'tableA'
+    assert dialog.view_combo.currentText() == 'Default'
+
+    # make sure view gets defaulted
+    previous_selection = addon.data.DatabaseTableViewConfig(
+        database_id=1, table_id=11, view_id=100)
+    dialog = addon.gui.DatabaseTableViewDialog(database_list, previous_selection, get_view_list_fn)
+    assert dialog.get_config() == previous_selection
+    assert dialog.database_combo.currentText() == 'db1'
+    assert dialog.table_combo.currentText() == 'tableB'
+    assert dialog.view_combo.currentText() == 'view1'

@@ -180,6 +180,14 @@ class DatabaseTableViewDialog(QDialog):
         self.view_combo.addItem("Default", data.View(id=None, name='Default'))
         for view in view_list:
             self.view_combo.addItem(view.name, view)
+            if self.previous_selection:
+                if self.previous_selection.database_id == self.database_combo.currentData().id:
+                    # we are on the right database
+                    if self.previous_selection.table_id == table.id:
+                        # we are on the right table
+                        if self.previous_selection.view_id == view.id:
+                            # we are on the right view, select it
+                            self.view_combo.setCurrentText(view.name)
 
     def get_config(self) -> data.DatabaseTableViewConfig:
         database = self.database_combo.currentData()
