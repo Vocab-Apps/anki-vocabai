@@ -12,9 +12,9 @@ class TableImportConfig:
 
 @dataclass
 class DatabaseTableViewConfig:
-    database_id: int = None
-    table_id: int = None
-    view_id: int = None
+    database_id: Optional[int] = None
+    table_id: Optional[int] = None
+    view_id: Optional[int] = None
 
 @dataclass
 class BaserowConfig:
@@ -37,8 +37,8 @@ class BaserowConfig:
 @dataclass
 class ImportConfig:
     baserow_config: BaserowConfig = field(default_factory=BaserowConfig)
-    table_configs: Dict[str, TableImportConfig] = field(default_factory=dict)
-    last_import_table_id: Optional[int] = None
+    table_configs: Dict[DatabaseTableViewConfig, TableImportConfig] = field(default_factory=dict)
+    last_import: Optional[DatabaseTableViewConfig] = field(default_factory=DatabaseTableViewConfig)
 
 @dataclass
 class Table:

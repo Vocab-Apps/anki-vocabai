@@ -25,7 +25,8 @@ def retrieve_authentication_token(import_config: data.ImportConfig) -> str:
 
 
 # given an ImportConfig and Table object, return a list of Views
-def get_view_list(import_config: data.ImportConfig, table: data.Table, token: str) -> list[data.View]:
+def get_view_list(import_config: data.ImportConfig, table: data.Table) -> list[data.View]:
+    token = retrieve_authentication_token(import_config)
     url = f'{import_config.baserow_config.api_base_url}/api/database/views/table/{table.id}/'
     token = retrieve_authentication_token(import_config)
     response = requests.get(url, headers={
@@ -40,9 +41,9 @@ def get_view_list(import_config: data.ImportConfig, table: data.Table, token: st
     return view_list
 
 # given an authentication token, return a list of data.Database objects
-def build_database_list(import_config: data.ImportConfig, token: str) -> list[data.Database]:
-    # list tables and ask user to pick one
-    # ====================================
+def build_database_list(import_config: data.ImportConfig) -> list[data.Database]:
+
+    token = retrieve_authentication_token(import_config)
 
     url  = f'{import_config.baserow_config.api_base_url}/api/applications/'
     response = requests.get(url, headers={
@@ -61,26 +62,14 @@ def build_database_list(import_config: data.ImportConfig, token: str) -> list[da
     return database_list
 
 # given a data.ImportConfig object, return a named temporary file containing the CSV data, and the table_id
-def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTemporaryFile:
+def retrieve_csv_file(import_config: data.ImportConfig, database_table_view_config: data.DatabaseTableViewConfig) -> tempfile.NamedTemporaryFile:
     logger.info('authenticate with baserow')
     base_url = import_config.baserow_config.api_base_url
     
     token = retrieve_authentication_token(import_config)
 
-    # retrieve database list
-    # ======================
-    database_list = build_database_list(import_config, token)
-    
-
-    startrow = 0
-    if import_config.last_import_table_id != None:
-        startrow = table_ids.index(import_config.last_import_table_id)
-    chosen_table = aqt.utils.chooseList('Choose a table to import from', table_names, startrow=startrow)
-    table_id = table_ids[chosen_table]
-    print(f'chose table: {chosen_table} ({table_id})')
-
     # start export job
-    url = f'{base_url}/api/database/export/table/{table_id}/'
+    url = f'{base_url}/api/database/export/table/{database_table_view_config.table_id}/'
     logger.info(f'starting export job, url: {url}')
     response = requests.post(url, data={
         "export_charset": "utf-8",
@@ -118,5 +107,5 @@ def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTempora
     filename = filename.replace(os.sep, '/')
     logger.info(f'wrote csv data to {filename}')
 
-    return csv_tempfile, table_id
+    return csv_tempfile
 

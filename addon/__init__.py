@@ -42,11 +42,19 @@ def initialize():
         import_config = get_config()
         logger.info(import_config)
 
-        csv_tempfile, table_id = baserow.retrieve_csv_file(import_config)
+        # get database list
+        database_list = baserow.build_database_list(import_config)
+        def build_get_view_list_fn(import_config: data.ImportConfig):
+            def get_view_list(table: data.Table):
+                return baserow.get_view_list(import_config, table)
+            return get_view_list
+        database_table_view_config = gui.display_database_table_view_dialog(database_list, import_config.last_import, build_get_view_list_fn(import_config))
+
+        csv_tempfile = baserow.retrieve_csv_file(import_config, database_table_view_config)
 
         table_import_config = data.TableImportConfig()
-        if str(table_id) in import_config.table_configs:
-            table_import_config = import_config.table_configs[str(table_id)]
+        if database_table_view_config in import_config.table_configs:
+            table_import_config = import_config.table_configs[database_table_view_config]
 
         
         csv_field_names = csv_utils.get_fieldnames(csv_tempfile.name)
@@ -59,8 +67,8 @@ def initialize():
         request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
 
         # save table_import_config
-        import_config.last_import_table_id = table_id
-        import_config.table_configs[str(table_id)] = table_import_config
+        import_config.last_import = database_table_view_config
+        import_config.table_configs[database_table_view_config] = table_import_config
         write_config(import_config)
 
         aqt.operations.CollectionOp(

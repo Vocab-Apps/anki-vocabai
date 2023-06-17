@@ -312,3 +312,11 @@ def display_baserow_config_dialog(config: data.BaserowConfig, parent=None) -> da
         return dialog.config
     else:
         return None
+
+def display_database_table_view_dialog(databases: List[data.Database], previous_selection: data.DatabaseTableViewConfig, get_view_list_fn, parent=None) -> data.DatabaseTableViewConfig:
+    dialog = DatabaseTableViewDialog(databases, previous_selection, get_view_list_fn, parent)
+    result = dialog.exec()
+    if result == QDialog.DialogCode.Accepted:
+        return dialog.get_config()
+    else:
+        return None
