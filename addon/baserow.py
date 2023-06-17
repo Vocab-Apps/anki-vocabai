@@ -8,8 +8,7 @@ import aqt.utils
 
 logger = logging.getLogger(__name__)
 
-# given a data.ImportConfig object, return a named temporary file containing the CSV data, and the table_id
-def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTemporaryFile:
+def retrieve_authentication_token(import_config: data.ImportConfig) -> str:
     logger.info('authenticate with baserow')
     base_url = import_config.baserow_config.api_base_url
     
@@ -22,6 +21,15 @@ def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTempora
     })
     response.raise_for_status()
     token = response.json()['token']
+    return token
+
+
+# given a data.ImportConfig object, return a named temporary file containing the CSV data, and the table_id
+def retrieve_csv_file(import_config: data.ImportConfig) -> tempfile.NamedTemporaryFile:
+    logger.info('authenticate with baserow')
+    base_url = import_config.baserow_config.api_base_url
+    
+    token = retrieve_authentication_token(import_config)
 
     # list tables and ask user to pick one
     # ====================================
