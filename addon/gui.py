@@ -94,18 +94,23 @@ class ConfigureBaserowDialog(QDialog):
 
 
 class DatabaseTableViewDialog(QDialog):
-    def __init__(self, databases: List[data.Database], get_view_list_fn, parent=None):
+    def __init__(self, databases: List[data.Database], previous_selection: data.DatabaseTableViewConfig, get_view_list_fn, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Select Database, Table, and View")
         self.setModal(True)
 
         self.database_list = databases
         self.get_view_list_fn = get_view_list_fn
+        self.previous_selection = previous_selection
 
         self.database_label = QLabel("Database:")
         self.database_combo = QComboBox()
         for database in databases:
             self.database_combo.addItem(database.name, database)
+            # if we have a previous selection, select it
+            if self.previous_selection and self.previous_selection.database_id:
+                if database.id == self.previous_selection.database_id:
+                    self.database_combo.setCurrentText(database.name)
 
         self.table_label = QLabel("Table:")
         self.table_combo = QComboBox()
@@ -155,6 +160,13 @@ class DatabaseTableViewDialog(QDialog):
         self.table_combo.clear()
         for table in database.tables:
             self.table_combo.addItem(table.name, table)
+            if self.previous_selection:
+                if self.previous_selection.database_id == self.database_combo.currentData().id:
+                    # we are on the right database
+                    if self.previous_selection.table_id == table.id:
+                        # we are on the right table, select it
+                        self.table_combo.setCurrentText(table.name)
+
 
     def populate_view_combo(self, index):
         table = self.table_combo.currentData()

@@ -164,7 +164,7 @@ def test_database_table_view_dialog(qtbot):
         else:
             return []
 
-    dialog = addon.gui.DatabaseTableViewDialog(database_list, get_view_list_fn)
+    dialog = addon.gui.DatabaseTableViewDialog(database_list, addon.data.DatabaseTableViewConfig(), get_view_list_fn)
     
     # the default config should be db1, tableA, and empty view
     expected_databasetableviewconfig = addon.data.DatabaseTableViewConfig(
@@ -192,3 +192,12 @@ def test_database_table_view_dialog(qtbot):
     # check defaults
     expected_databasetableviewconfig = addon.data.DatabaseTableViewConfig(
         database_id=2, table_id=20, view_id=None)
+
+    # check that defaults are selected properly
+    previous_selection = addon.data.DatabaseTableViewConfig(
+        database_id=1, table_id=11, view_id=None)
+    dialog = addon.gui.DatabaseTableViewDialog(database_list, previous_selection, get_view_list_fn)
+    assert dialog.get_config() == previous_selection
+    assert dialog.database_combo.currentText() == 'db1'
+    assert dialog.table_combo.currentText() == 'tableB'
+    assert dialog.view_combo.currentText() == 'Default'
