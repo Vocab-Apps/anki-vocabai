@@ -4,13 +4,14 @@ from typing import List
 import logging
 from . import anki_utils
 from . import data
+from . import version
 
 logger = logging.getLogger(__name__)
 
 class ConfigureBaserowDialog(QDialog):
     def __init__(self, config: data.BaserowConfig, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Configure Baserow")
+        self.setWindowTitle("Configure Baserow identifiers")
         self.username_label = QLabel("Username:")
         self.username_edit = QLineEdit()
         self.username_edit.setText(config.username)
@@ -25,6 +26,10 @@ class ConfigureBaserowDialog(QDialog):
         self.custom_radio = QRadioButton("Custom:")
         self.custom_edit = QLineEdit()
         self.custom_edit.setEnabled(False)
+
+        version_label = QLabel(f"Anki Vocab.Ai / Baserow Import Addon, version: {version.ANKI_VOCABAI_VERSION}")
+        version_label.setStyleSheet("font-size: 10px; font: italic;")
+
         self.ok_button = QPushButton("OK")
         self.cancel_button = QPushButton("Cancel")
         self.ok_button.clicked.connect(self.on_ok_button_clicked)
@@ -39,6 +44,7 @@ class ConfigureBaserowDialog(QDialog):
         layout.addWidget(self.baserow_io_radio)
         layout.addWidget(self.custom_radio)
         layout.addWidget(self.custom_edit)
+        layout.addWidget(version_label)
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.ok_button)
         button_layout.addWidget(self.cancel_button)
