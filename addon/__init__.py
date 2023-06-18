@@ -7,7 +7,7 @@ import aqt.import_export
 import aqt.utils
 import databind.json
 import aqt.operations
-import anki.collection
+import requests
 
 from . import baserow
 from . import data
@@ -28,50 +28,55 @@ def initialize():
         config = databind.json.dump(import_config, data.ImportConfig)
         aqt.mw.addonManager.writeConfig(__name__, config)
 
-    def start_vocabai_import_manual() -> None:
-        import_config = get_config()
-        logger.info(import_config)
-
-        csv_tempfile, table_id = baserow.retrieve_csv_file(import_config)
-
-        # bring up anki csv import dialog
-        aqt.import_export.importing.CsvImporter.do_import(aqt.mw, csv_tempfile.name)
 
     def start_vocabai_import_automatic() -> None:
         anki_util_instance = anki_utils.AnkiUtils()
         import_config = get_config()
         logger.info(import_config)
 
-        # get database list
-        database_list = baserow.build_database_list(import_config)
-        def build_get_view_list_fn(import_config: data.ImportConfig):
-            def get_view_list(table: data.Table):
-                return baserow.get_view_list(import_config, table)
-            return get_view_list
-        database_table_view_config = gui.display_database_table_view_dialog(database_list, import_config.last_import, build_get_view_list_fn(import_config))
-        if database_table_view_config == None:
-            # user canceled
+        # check that baserow config is valid
+        try:
+            import_config.baserow_config.validate()
+        except ValueError as e:
+            aqt.utils.showCritical(f'Missing configuration: {str(e)}, please run configuration.', aqt.mw)
+            return            
+
+        try:
+
+            # get database list
+            database_list = baserow.build_database_list(import_config)
+            def build_get_view_list_fn(import_config: data.ImportConfig):
+                def get_view_list(table: data.Table):
+                    return baserow.get_view_list(import_config, table)
+                return get_view_list
+            database_table_view_config = gui.display_database_table_view_dialog(database_list, import_config.last_import, build_get_view_list_fn(import_config))
+            if database_table_view_config == None:
+                # user canceled
+                return
+
+            csv_tempfile = baserow.retrieve_csv_file(import_config, database_table_view_config)
+
+            table_import_config = data.TableImportConfig()
+            if database_table_view_config.get_key() in import_config.table_configs:
+                table_import_config = import_config.table_configs[database_table_view_config.get_key()]
+
+            
+            csv_field_names = csv_utils.get_fieldnames(csv_tempfile.name)
+            table_import_config = gui.display_table_import_dialog(table_import_config, csv_field_names, anki_util_instance)
+            if table_import_config == None:
+                # user canceled
+                return
+
+            # create the csv import request
+            request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
+        except requests.exceptions.RequestException as e:
+            logger.exception(e)
+            aqt.utils.showCritical(f"Error while importing from Baserow: {str(e)}", aqt.mw)
             return
-
-        csv_tempfile = baserow.retrieve_csv_file(import_config, database_table_view_config)
-
-        table_import_config = data.TableImportConfig()
-        if database_table_view_config.hash_key() in import_config.table_configs:
-            table_import_config = import_config.table_configs[database_table_view_config.hash_key()]
-
-        
-        csv_field_names = csv_utils.get_fieldnames(csv_tempfile.name)
-        table_import_config = gui.display_table_import_dialog(table_import_config, csv_field_names, anki_util_instance)
-        if table_import_config == None:
-            # user canceled
-            return
-
-        # create the csv import request
-        request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
 
         # save table_import_config
         import_config.last_import = database_table_view_config
-        import_config.table_configs[database_table_view_config.hash_key()] = table_import_config
+        import_config.table_configs[database_table_view_config.get_key()] = table_import_config
         write_config(import_config)
 
         aqt.operations.CollectionOp(
@@ -94,15 +99,11 @@ def initialize():
         write_config(import_config)
 
 
-    import_action = aqt.qt.QAction("Import from Vocab.Ai - manual", aqt.mw)
-    aqt.qt.qconnect(import_action.triggered, start_vocabai_import_manual)
-    aqt.mw.form.menuTools.addAction(import_action)
-
-    import_action = aqt.qt.QAction("Import from Vocab.Ai - automatic", aqt.mw)
+    import_action = aqt.qt.QAction("Vocab.Ai / Baserow: Start Import", aqt.mw)
     aqt.qt.qconnect(import_action.triggered, start_vocabai_import_automatic)
     aqt.mw.form.menuTools.addAction(import_action)
 
     # add menu entry for baserow config
-    config_action = aqt.qt.QAction("Import from Vocab.Ai - Configure", aqt.mw)
+    config_action = aqt.qt.QAction("Vocab.Ai / Baserow: Configure", aqt.mw)
     aqt.qt.qconnect(config_action.triggered, display_baserow_config_dialog)
     aqt.mw.form.menuTools.addAction(config_action)

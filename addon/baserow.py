@@ -71,12 +71,15 @@ def retrieve_csv_file(import_config: data.ImportConfig, database_table_view_conf
     # start export job
     url = f'{base_url}/api/database/export/table/{database_table_view_config.table_id}/'
     logger.info(f'starting export job, url: {url}')
-    response = requests.post(url, data={
+    data = {
         "export_charset": "utf-8",
         "exporter_type": "csv",
         "csv_column_separator": ",",
         "csv_include_header": True
-    }, headers={
+    }
+    if database_table_view_config.view_id != None:
+        data['view_id'] = database_table_view_config.view_id
+    response = requests.post(url, data=data, headers={
             "Authorization": f"JWT {token}"
     })
     response.raise_for_status()
