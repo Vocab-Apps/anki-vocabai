@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton, QVBoxLayout, QLineEdit, QRadioButton, QButtonGroup, QHBoxLayout, QMessageBox
+from PyQt6 import QtGui
 from typing import List
 import logging
 from . import anki_utils
@@ -197,16 +198,20 @@ class DatabaseTableViewDialog(QDialog):
 
 class ConfigureTableImportDialog(QDialog):
     UNMAPPED_FIELD_NAME = '(Unmapped)'
+    BOLD_FONT = QtGui.QFont()
+    BOLD_FONT.setBold(True)
 
     def __init__(self, model: data.TableImportConfig, csv_field_names: List[str], anki_utils, parent=None):
         super().__init__(parent)
         self.csv_field_names = csv_field_names
         self.all_field_names = [self.UNMAPPED_FIELD_NAME] + csv_field_names
         self.anki_utils = anki_utils
-        self.setWindowTitle("Anki Import")
+        self.setWindowTitle("Field Mapping")
         self.note_type_label = QLabel("Note Type:")
+        self.note_type_label.setFont(self.BOLD_FONT)
         self.note_type_combo = QComboBox()
         self.deck_label = QLabel("Deck:")
+        self.deck_label.setFont(self.BOLD_FONT)
         self.deck_combo = QComboBox()
         self.ok_button = QPushButton("OK")
         self.cancel_button = QPushButton("Cancel")
@@ -217,13 +222,17 @@ class ConfigureTableImportDialog(QDialog):
         layout.addWidget(self.note_type_combo)
         layout.addWidget(self.deck_label)
         layout.addWidget(self.deck_combo)
-        layout.addWidget(self.ok_button)
-        layout.addWidget(self.cancel_button)
 
         # add layout for field mappings
         self.field_mappings_layout = QVBoxLayout()
         layout.addLayout(self.field_mappings_layout)
-        
+
+
+        button_layout = QHBoxLayout()        
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+        layout.addLayout(button_layout)
+
         self.setLayout(layout)
         self.populate_note_type_combo()
         self.populate_deck_combo()
@@ -265,6 +274,19 @@ class ConfigureTableImportDialog(QDialog):
         # clear all widgets from the self.field_mappings_layout layout
         for i in reversed(range(self.field_mappings_layout.count())):
             self.field_mappings_layout.itemAt(i).widget().setParent(None)
+
+        # headers
+        label = QLabel('Field Mappings:')
+        label.setFont(self.BOLD_FONT)
+        self.field_mappings_layout.addWidget(label)
+        hlayout = QHBoxLayout()
+        label = QLabel('Anki Field:')
+        label.setFont(self.BOLD_FONT)
+        hlayout.addWidget(label)
+        label = QLabel('Baserow Field:')
+        label.setFont(self.BOLD_FONT)
+        hlayout.addWidget(label)
+        self.field_mappings_layout.addLayout(hlayout)        
         # for each field in self.note_type_fields, add a combo box populated with self.csv_field_names
         for field in self.note_type_fields:
             label = QLabel(field)
@@ -275,8 +297,11 @@ class ConfigureTableImportDialog(QDialog):
                 mapped_csv_field_name = self.model.field_mapping[field]
                 if mapped_csv_field_name in self.csv_field_names:
                     combo.setCurrentText(mapped_csv_field_name)
-            self.field_mappings_layout.addWidget(label)
-            self.field_mappings_layout.addWidget(combo)
+
+            hlayout = QHBoxLayout()
+            hlayout.addWidget(label)
+            hlayout.addWidget(combo)
+            self.field_mappings_layout.addLayout(hlayout)
             # when the combo box is changed, call a lambda function which contains field
             # this will capture the current value of field in the lambda function
             combo.currentTextChanged.connect(self.get_field_mapping_text_changed_lambda(field, combo))
