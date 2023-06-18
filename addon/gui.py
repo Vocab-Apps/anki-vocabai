@@ -103,7 +103,7 @@ class DatabaseTableViewDialog(QDialog):
         self.get_view_list_fn = get_view_list_fn
         self.previous_selection = previous_selection
 
-        self.database_label = QLabel("Database:")
+        self.database_label = QLabel("Select Database to import from:")
         self.database_combo = QComboBox()
         for database in databases:
             self.database_combo.addItem(database.name, database)
@@ -112,10 +112,10 @@ class DatabaseTableViewDialog(QDialog):
                 if database.id == self.previous_selection.database_id:
                     self.database_combo.setCurrentText(database.name)
 
-        self.table_label = QLabel("Table:")
+        self.table_label = QLabel("Select Table to import from:")
         self.table_combo = QComboBox()
 
-        self.view_label = QLabel("View:")
+        self.view_label = QLabel("Optional: select a view (allows filtering)")
         self.view_combo = QComboBox()
 
         self.ok_button = QPushButton("OK")

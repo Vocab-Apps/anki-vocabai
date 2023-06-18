@@ -7,7 +7,7 @@ import aqt.import_export
 import aqt.utils
 import databind.json
 import aqt.operations
-import anki.collection
+import requests
 
 from . import baserow
 from . import data
@@ -67,7 +67,7 @@ def initialize():
 
             # create the csv import request
             request, csv_tempfile_no_header = logic.create_import_csv_request(csv_tempfile.name, table_import_config)
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             logger.exception(e)
             aqt.utils.showCritical(f"Error while importing from Baserow: {str(e)}", aqt.mw)
             return
