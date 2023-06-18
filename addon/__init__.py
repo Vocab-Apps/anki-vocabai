@@ -34,12 +34,14 @@ def initialize():
         import_config = get_config()
         logger.info(import_config)
 
+        # check that baserow config is valid
         try:
-            # check that baserow config is valid
-            try:
-                import_config.baserow_config.validate()
-            except Exception as e:
-                raise Exception(f'Missing configuration: {str(e)}, please run configuration.')
+            import_config.baserow_config.validate()
+        except ValueError as e:
+            aqt.utils.showCritical(f'Missing configuration: {str(e)}, please run configuration.', aqt.mw)
+            return            
+
+        try:
 
             # get database list
             database_list = baserow.build_database_list(import_config)
