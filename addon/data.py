@@ -16,8 +16,11 @@ class DatabaseTableViewConfig:
     table_id: Optional[int] = None
     view_id: Optional[int] = None
 
-    def hash_key(self):
-        return str(self.__hash__())
+    def get_key(self):
+        key = f'database_{self.database_id}_table_{self.table_id}'
+        if self.view_id:
+            key += f'_view_{self.view_id}'
+        return key
 
 @dataclass
 class BaserowConfig:
