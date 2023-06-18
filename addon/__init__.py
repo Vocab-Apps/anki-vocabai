@@ -15,6 +15,7 @@ from . import logic
 from . import csv_utils
 from . import gui
 from . import anki_utils
+from . import version
 
 logger = logging.getLogger(__name__)
 
