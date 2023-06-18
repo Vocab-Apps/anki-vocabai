@@ -34,7 +34,7 @@ else:
                 for stack_frame in stack_summary:
                     filename = stack_frame.filename
                     # TODO change addon id
-                    if 'anki-vocabai' in filename or '111623432' in filename:
+                    if 'anki-vocabai' in filename or '1327473241' in filename:
                         relevant_exception = True
                 
                 # if not, discard
