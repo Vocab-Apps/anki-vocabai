@@ -35,6 +35,12 @@ def initialize():
         logger.info(import_config)
 
         try:
+            # check that baserow config is valid
+            try:
+                import_config.baserow_config.validate()
+            except Exception as e:
+                raise Exception(f'Missing configuration: {str(e)}, please run configuration.')
+
             # get database list
             database_list = baserow.build_database_list(import_config)
             def build_get_view_list_fn(import_config: data.ImportConfig):
