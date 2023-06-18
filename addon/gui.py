@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton, QVBoxLayout, QLineEdit, QRadioButton, QButtonGroup, QHBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton, QVBoxLayout, QLineEdit, QRadioButton, QButtonGroup, QHBoxLayout, QMessageBox, QGridLayout
 from PyQt6 import QtGui
 from typing import List
 import logging
@@ -224,7 +224,7 @@ class ConfigureTableImportDialog(QDialog):
         layout.addWidget(self.deck_combo)
 
         # add layout for field mappings
-        self.field_mappings_layout = QVBoxLayout()
+        self.field_mappings_layout = QGridLayout()
         layout.addLayout(self.field_mappings_layout)
 
 
@@ -276,17 +276,21 @@ class ConfigureTableImportDialog(QDialog):
             self.field_mappings_layout.itemAt(i).widget().setParent(None)
 
         # headers
+        layout_row = 0
+        row_span = 1
+        col_span_1 = 1
+        col_span_2 = 2
         label = QLabel('Field Mappings:')
         label.setFont(self.BOLD_FONT)
-        self.field_mappings_layout.addWidget(label)
-        hlayout = QHBoxLayout()
+        self.field_mappings_layout.addWidget(label, layout_row, 0, row_span, col_span_2)
+        layout_row += 1
         label = QLabel('Anki Field:')
         label.setFont(self.BOLD_FONT)
-        hlayout.addWidget(label)
+        self.field_mappings_layout.addWidget(label, layout_row, 0, row_span, col_span_1)
         label = QLabel('Baserow Field:')
         label.setFont(self.BOLD_FONT)
-        hlayout.addWidget(label)
-        self.field_mappings_layout.addLayout(hlayout)        
+        self.field_mappings_layout.addWidget(label, layout_row, 1, row_span, col_span_1)
+        layout_row += 1
         # for each field in self.note_type_fields, add a combo box populated with self.csv_field_names
         for field in self.note_type_fields:
             label = QLabel(field)
@@ -298,10 +302,10 @@ class ConfigureTableImportDialog(QDialog):
                 if mapped_csv_field_name in self.csv_field_names:
                     combo.setCurrentText(mapped_csv_field_name)
 
-            hlayout = QHBoxLayout()
-            hlayout.addWidget(label)
-            hlayout.addWidget(combo)
-            self.field_mappings_layout.addLayout(hlayout)
+            self.field_mappings_layout.addWidget(label, layout_row, 0, row_span, col_span_1)
+            self.field_mappings_layout.addWidget(combo, layout_row, 1, row_span, col_span_1)
+
+            layout_row += 1
             # when the combo box is changed, call a lambda function which contains field
             # this will capture the current value of field in the lambda function
             combo.currentTextChanged.connect(self.get_field_mapping_text_changed_lambda(field, combo))
