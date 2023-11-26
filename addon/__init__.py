@@ -84,7 +84,7 @@ def initialize():
             parent=aqt.mw,
             op=lambda col: col.import_csv(request),
         ).with_backend_progress(aqt.import_export.importing.import_progress_update).success(
-            aqt.import_export.importing.show_import_log
+            anki_util_instance.show_import_result
         ).run_in_background()    
 
 

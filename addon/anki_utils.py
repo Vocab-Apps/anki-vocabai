@@ -1,5 +1,6 @@
 import anki.collection
 import aqt
+import aqt.utils
 from typing import List
 
 class AnkiUtils():
@@ -15,3 +16,6 @@ class AnkiUtils():
 
     def get_deck_list(self) -> List[str]:
         return aqt.mw.col.decks.all_names()
+
+    def show_import_result(self, log_with_changes):
+        aqt.utils.showText(str(log_with_changes.log), plain_text_edit=True)
