@@ -23,6 +23,8 @@ def initialize():
     def get_config() -> data.ImportConfig:
         config = aqt.mw.addonManager.getConfig(__name__)
         import_config = databind.json.load(config, data.ImportConfig)
+        if import_config.baserow_config.api_base_url == data.API_URL_VOCABAI_OLD:
+            import_config.baserow_config.api_base_url = data.API_URL_VOCABAI
         return import_config
 
     def write_config(import_config: data.ImportConfig) -> None:

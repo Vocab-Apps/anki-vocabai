@@ -124,7 +124,7 @@ def test_configure_baserow_config_default(qtbot):
 
     # check that the default values are correct
     assert dialog.app_vocab_radio.isChecked()
-    assert dialog.config.api_base_url == 'https://app.vocab.ai'
+    assert dialog.config.api_base_url == 'https://words.vocab.ai'
 
     # switch to the baserow api url
     dialog.baserow_io_radio.setChecked(True)

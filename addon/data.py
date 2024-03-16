@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Dict, Optional
 
-API_URL_VOCABAI = 'https://app.vocab.ai'
+API_URL_VOCABAI = 'https://words.vocab.ai'
 API_URL_BASEROW = 'https://api.baserow.io'
+API_URL_VOCABAI_OLD = 'https://app.vocab.ai'
 
 @dataclass
 class TableImportConfig:
@@ -24,7 +25,7 @@ class DatabaseTableViewConfig:
 
 @dataclass
 class BaserowConfig:
-    api_base_url: str = 'https://app.vocab.ai'
+    api_base_url: str = API_URL_VOCABAI
     username: str = None
     password: str = None
 
