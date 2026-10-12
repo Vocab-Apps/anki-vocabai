@@ -3,7 +3,7 @@
 import logging
 import aqt
 import aqt.qt
-import aqt.import_export
+import aqt.import_export.importing
 import aqt.utils
 import databind.json
 import aqt.operations
